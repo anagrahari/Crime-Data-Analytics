@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='lib/css/bootstrap.min.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='lib/css/dc.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='lib/css/keen-dashboards.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='lib/css/d3.slider.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='lib/css/radar-chart.css') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for ('static', filename='css/style.css') }}">
+
+    <title>CSE 564 Final Project</title>
+</head>
+<body>
+
+    <div class="tab">
+      <button class="tablinks" onclick="openTabClick(event, 'dashboard_container', 1)" id="btn_dashboard">Dashboard</button>
+      <button class="tablinks" onclick="openTabClick(event, 'dimension_container', 2)" id="btn_dimensions">Dimensionality</button>
+      <button class="tablinks" onclick="openTabClick(event, 'pcamds_container', 3)" id="btn_pcamds">PCA/MDS</button>
+      <button class="tablinks" onclick="openTabClick(event, 'slider_map_container', 4)" id="btn_mapview_slider">Map</button>
+      <button class="tablinks" onclick="openTabClick(event, 'parallel_container', 5)" id="btn_parallel">Parallel Coordinates</button>
+    </div>
+
+    <div class="tabcontent" id="dashboard_container">
+
+        <div class="row">
+
+            <div class="col-sm-6">
+                <div class="row">
+
+                    <!-- Time Chart -->
+                    <div class="col-sm-12">
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                Number of Murders
+                            </div>
+
+                            <div class="chart-stage">
+                                <div id="time-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Time Chart -->
+
+                    <!-- Victim race Pie -->
+                    <div class="col-sm-6">
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                Victim Race
+                            </div>
+
+                            <div class="chart-stage">
+                                <div id="victim-race-pie-chart" style="transform: translate(15px, 0px)"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Victim race Pie -->
+
+                    <!-- Weapon Row -->
+                    <div class="col-sm-6">
+                        <div class="chart-wrapper">
+                            <div class="chart-title">
+                                Weapon Used
+                            </div>
+
+                            <div class="chart-stage">
+                                <div id="weapon-used-row-chart"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- Weapon Row -->
+
+                </div>
+            </div>
+
+            <!-- Map -->
+            <div class="col-sm-6">
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        Distribution of Murders
+                    </div>
+
+                    <div class="chart-stage">
+                        <div id="us-chart"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Map -->
+
+            <!-- Metric 1 -->
+            <div class="col-sm-3">
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        Total cases
+                    </div>
+
+                    <div class="chart-stage">
+                        <div id="murder-count-nd"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Metric 1 -->
+
+            <!-- Metric 2 -->
+            <div class="col-sm-3">
+                <div class="chart-wrapper">
+                    <div class="chart-title">
+                        Solved cases
+                    </div>
+
+                    <div class="chart-stage">
+                        <div id="solved-cases-nd"></div>
+                    </div>
+                </div>
+            </div>
+            <!-- Metric 2 -->
+
+        </div>
+
+    </div>
+
+    <div class="tabcontent" id="dimension_container">
+        <svg class="scree_svg" id="scree" width="650" height="550"></svg>
+        <svg class="bar_svg" id="dim_bar" width="650" height="550"></svg>
+    </div>
+
+    <div class="tabcontent" id="pcamds_container">
+        <svg class="pca_svg" id="pca_plot" width="650" height="550"></svg>
+        <svg class="mds_svg" id="mds_plot" width="650" height="550"></svg>
+    </div>
+
+    <div class="tabcontent" id="slider_map_container">
+        <svg class="legend_svg" id="legend_area_county" display="none"></svg>
+        <svg class="legend_svg" id="legend_area_state"></svg>
+        <svg class="map_svg" id="map_slide_county" width="870" height="550" display="none"></svg>
+        <svg class="map_svg" id="map_slide_state" width="870" height="550"></svg>
+        <svg class="radar_svg" id="radar_chart_state" width="300" height="500"></svg>
+
+        <fieldset style="transform: translate(-300px, 60px);">
+            <input type="radio" class="radio" name="maptype" onclick="radioChange()" value="state" id="state_btn" checked="checked" />
+            <label for="state_btn">State View</label>
+            <input type="radio" class="radio" name="maptype" onclick="radioChange()" value="county" id="county_btn"  />
+            <label for="county_btn">County View</label>
+        </fieldset>
+    </div>
+
+    <div class="tabcontent" id="parallel_container">
+        <svg class="parallel_svg" id="parallel" width="1260" height="500"></svg>
+    </div>
+
+    <div class="tabcontent" id="bubble_container">
+        <svg class="bubble_svg" id="stack" width="940" height="460"></svg>
+    </div>
+
+    <script src="https://d3js.org/d3.v3.min.js"></script>
+    <script src="https://d3js.org/topojson.v2.min.js"></script>
+    <script src="http://d3js.org/colorbrewer.v1.min.js"></script>
+    <script src="{{ url_for('static', filename='lib/js/d3.slider.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/jquery.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/bootstrap.min.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/crossfilter.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/dc.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/queue.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/keen.min.js') }}"></script>
+	<script src="{{ url_for('static', filename='lib/js/legend.js') }}"></script>
+    <script src="{{ url_for('static', filename='lib/js/radar.js') }}"></script>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}"></script>
+
+</body>
+</html>
